@@ -1,6 +1,9 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <DHT.h>
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C LCD = LiquidCrystal_I2C(0x27, 16, 2);
 
 // WiFi
 const char* ssid = "Wokwi-GUEST";
@@ -46,9 +49,21 @@ void reconnect() {
   }
 }
 
+void printVars(float temperature, float humidity) {
+  LCD.setCursor(0, 0);
+  LCD.println("temp: ");
+  LCD.setCursor(8, 0);
+  LCD.println(temperature);
+  LCD.setCursor(0, 1);
+  LCD.println("humi: ");
+  LCD.println(humidity);
+}
+
 void setup() {
   Serial.begin(115200);
   dht.begin();
+  LCD.init();
+  LCD.backlight();
   //setup_wifi();
   //client.setServer(mqtt_server, 1883);
 }
@@ -69,9 +84,10 @@ void loop() {
   }
 
   String payload = "{\"temp\":" + String(temperature, 1) + ",\"humidity\":" + String(humidity, 1) + "}";
-
   Serial.println(payload);
-  
+
+  printVars(temperature, humidity);
+
   /*if (payload != prevWeather) {
     Serial.println("Updated!");
     Serial.print("Reporting to MQTT topic ");
