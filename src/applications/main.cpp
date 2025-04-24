@@ -3,7 +3,7 @@
 #include <DHT.h>
 #include <LiquidCrystal_I2C.h>
 #include "domain/model/Pond.h"
-#include "domain/use_case/PondStatusEvaluator.h"
+#include "domain/usecase/PondStatusEvaluator.h"
 #include "infrastructure/driven-adapters/NotificationService.h"
 #include "infrastructure/driven-adapters/ThingSpeakService.h"
 
