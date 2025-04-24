@@ -6,6 +6,8 @@
 #include "domain/usecase/PondStatusEvaluator.h"
 #include "infrastructure/driven-adapters/NotificationService.h"
 #include "infrastructure/driven-adapters/ThingSpeakService.h"
+#include "infrastructure/entry-points/WeatherSensor.h"
+
 
 LiquidCrystal_I2C LCD = LiquidCrystal_I2C(0x27, 16, 2);
 
@@ -17,7 +19,7 @@ const char* password = "";
 #define DHTPIN 15
 #define DHTTYPE DHT22
 DHT dht(DHTPIN, DHTTYPE);
-
+WeatherSensor weatherSensor(dht); 
 WiFiMulti wifiMulti;
   
 void setup_wifi() {
@@ -52,17 +54,15 @@ void setup() {
 
 void loop() {
   Pond pond;
-
   Serial.print("Measuring weather conditions... ");
-  float temperature = dht.readTemperature();
-  float humidity = dht.readHumidity();
-
-  if (isnan(temperature) || isnan(humidity)) {
+  
+  if (weatherSensor.isValid()) {
+    pond.setTemperature(weatherSensor.getTemperature());
+    pond.setPH(weatherSensor.getHumidity());
+  }else{
     Serial.println("Failed to read from DHT sensor!");
     return;
   }
-
-  pond.setTemperature(temperature);
 
   pond.setState(PondStatusEvaluator::evaluateStatus(pond));
 
@@ -70,7 +70,7 @@ void loop() {
 
   ThingSpeakService::sendPondData(pond);
   
-  printVars(temperature, humidity);
+  printVars(pond.getTemperature(), pond.getPH());
 
   delay(1000);
 }
