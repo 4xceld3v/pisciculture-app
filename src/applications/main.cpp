@@ -55,22 +55,31 @@ void setup() {
 
 void loop() {
   Pond pond;
-  Serial.print("Measuring weather conditions... ");
+  float temp;
+  float ph;
+  Serial.println("Measuring weather conditions... ");
   
   if (weatherSensor.isValid()) {
-    pond.setTemperature(weatherSensor.getTemperature());
-    pond.setPH(weatherSensor.getHumidity());
+    temp = weatherSensor.getTemperature();
+    ph = weatherSensor.getHumidity();
   }else{
     Serial.println("Failed to read from DHT sensor!");
     return;
-  }
+  }     
+
+  pond.setTemperature(map(temp, 0, 4095, 10, 40)); // °C
+  pond.setPH(map(ph, 0, 4095, 4, 10)); // pH
 
   pond.setState(PondStatusEvaluator::evaluateStatus(pond));
 
   NotificationService::sendNotification(pond);
 
+  delay(1000);
+
   ThingSpeakService::sendPondData(pond);
   
+  delay(1000);
+
   printVars(pond.getTemperature(), pond.getPH());
 
   delay(1000);
