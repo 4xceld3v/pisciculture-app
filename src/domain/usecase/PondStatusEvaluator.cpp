@@ -6,12 +6,15 @@ String PondStatusEvaluator::evaluateStatus(const Pond& data) {
 
     bool tempAlta = data.getTemperature() > 30;
     bool tempIdeal = data.getTemperature() >= 22 && data.getTemperature() <= 30;
+    bool phAcido = data.getPH() < 6.5;
 
     if (tempAlta) {
         return "CRITICO";
     } else if (tempIdeal) {
         return "ESTABLE";
-    } else {
+    } else if ((phAcido || tempAlta)){
+        return "ALERTA";
+    }else {
         return "ACEPTABLE";
     }
 

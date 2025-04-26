@@ -23,15 +23,16 @@ WeatherSensor weatherSensor(dht);
 WiFiMulti wifiMulti;
   
 void setup_wifi() {
-  Serial.print("Connecting to WiFi");
-  wifiMulti.addAP(ssid, password);
+  delay(100); 
+  Serial.println("Connecting to WiFi...");
+  wifiMulti.addAP(ssid, password);  
   while (wifiMulti.run() != WL_CONNECTED) {
     Serial.print(".");
     delay(1000);
   }
   Serial.println("\nConnected to Wi-Fi!");
-  Serial.println("IP Address: ");
-  Serial.print(WiFi.localIP());
+  Serial.print("IP Address: ");
+  Serial.println(WiFi.localIP());
 }
 
 void printVars(float temperature, float humidity) {
